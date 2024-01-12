@@ -459,17 +459,8 @@ public:
             const auto localBounds = component.getLocalBounds();
             const auto newArea = peer->getComponent().getLocalArea (&component, localBounds).withZeroOrigin() * displayScale;
 
-            const auto newScale = [&]
-            {
-               #if JUCE_WINDOWS && JUCE_WIN_PER_MONITOR_DPI_AWARE
-                // Some hosts (Pro Tools 2022.7) do not take the window scaling into account when sizing
-                // plugin editor windows. The displayScale however seems to be correctly reported even in
-                // such cases.
-                return (float) displayScale * Desktop::getInstance().getGlobalScaleFactor();
-               #else
-                return (float) displayScale;
-               #endif
-            }();
+            const auto newScale = (float)newArea.getWidth() / (float)localBounds.getWidth();
+
 
             areaAndScale.set ({ newArea, newScale }, [&]
             {
