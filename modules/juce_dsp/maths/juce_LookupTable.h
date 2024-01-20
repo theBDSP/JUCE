@@ -311,6 +311,11 @@ public:
                                              FloatType maxInputValue,
                                              size_t numPoints,
                                              size_t numTestPoints = 0);
+
+    bool isInitialized()
+    {
+        return lookupTable.isInitialised();
+    }
 private:
     //==============================================================================
     static double calculateRelativeDifference (double, double) noexcept;
