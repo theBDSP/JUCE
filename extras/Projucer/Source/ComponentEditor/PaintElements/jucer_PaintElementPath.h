@@ -152,17 +152,17 @@ public:
     PathPointComponent (PaintElementPath* const path_,
                         int index, int pointNumber);
 
-    ~PathPointComponent() override;
+    ~PathPointComponent();
 
-    void updatePosition() override;
+    void updatePosition();
     void showPopupMenu();
 
-    void paint (Graphics& g) override;
-    void mouseDown (const MouseEvent& e) override;
-    void mouseDrag (const MouseEvent& e) override;
-    void mouseUp (const MouseEvent& e) override;
+    void paint (Graphics& g);
+    void mouseDown (const MouseEvent& e);
+    void mouseDrag (const MouseEvent& e);
+    void mouseUp (const MouseEvent& e);
 
-    void changeListenerCallback (ChangeBroadcaster*) override;
+    void changeListenerCallback (ChangeBroadcaster*);
 
 private:
     PaintElementPath* const path;

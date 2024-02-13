@@ -128,7 +128,7 @@ public:
             oldState = comp->getFilename();
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             getComponent()->setFilename (newState);
@@ -136,7 +136,7 @@ public:
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             getComponent()->setFilename (oldState);
@@ -206,13 +206,13 @@ private:
         {
         }
 
-        void buttonClicked() override
+        void buttonClicked()
         {
             if (ProjectContentComponent* const pcc = findParentComponentOfClass<ProjectContentComponent>())
                 pcc->showEditorForFile (component->findFile(), true);
         }
 
-        String getButtonText() const override
+        String getButtonText() const
         {
             return "Open file for editing";
         }
@@ -249,7 +249,7 @@ private:
                 oldValue = comp->getConstructorParams();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setConstructorParams (newValue);
@@ -258,7 +258,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setConstructorParams (oldValue);

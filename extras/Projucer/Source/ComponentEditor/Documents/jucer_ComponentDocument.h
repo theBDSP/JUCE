@@ -32,26 +32,26 @@ class ComponentDocument   : public JucerDocument
 {
 public:
     ComponentDocument (SourceCodeDocument* cpp);
-    ~ComponentDocument() override;
+    ~ComponentDocument();
 
     //==============================================================================
-    String getTypeName() const override;
+    String getTypeName() const;
 
-    JucerDocument* createCopy() override;
-    Component* createTestComponent (bool alwaysFillBackground) override;
+    JucerDocument* createCopy();
+    Component* createTestComponent (bool alwaysFillBackground);
 
-    int getNumPaintRoutines() const override                             { return 1; }
-    StringArray getPaintRoutineNames() const override                    { return StringArray ("Graphics"); }
-    PaintRoutine* getPaintRoutine (int index) const override             { return index == 0 ? backgroundGraphics.get() : nullptr; }
+    int getNumPaintRoutines() const                             { return 1; }
+    StringArray getPaintRoutineNames() const                    { return StringArray ("Graphics"); }
+    PaintRoutine* getPaintRoutine (int index) const             { return index == 0 ? backgroundGraphics.get() : nullptr; }
 
-    ComponentLayout* getComponentLayout() const override                 { return components.get(); }
+    ComponentLayout* getComponentLayout() const                 { return components.get(); }
 
     //==============================================================================
-    std::unique_ptr<XmlElement> createXml() const override;
-    bool loadFromXml (const XmlElement& xml) override;
+    std::unique_ptr<XmlElement> createXml() const;
+    bool loadFromXml (const XmlElement& xml);
 
-    void fillInGeneratedCode (GeneratedCode& code) const override;
-    void applyCustomPaintSnippets (StringArray&) override;
+    void fillInGeneratedCode (GeneratedCode& code) const;
+    void applyCustomPaintSnippets (StringArray&);
 
 private:
     std::unique_ptr<ComponentLayout> components;

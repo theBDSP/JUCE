@@ -176,14 +176,14 @@ public:
         {
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             getElement()->setText (newText, false);
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             getElement()->setText (oldText, false);
@@ -224,14 +224,14 @@ public:
         {
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             getElement()->setFont (newFont, false);
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             getElement()->setFont (oldFont, false);
@@ -270,14 +270,14 @@ public:
         {
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             getElement()->setTypefaceName (newValue, false);
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             getElement()->setTypefaceName (oldValue, false);
@@ -317,14 +317,14 @@ public:
         {
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             getElement()->setJustification (newValue, false);
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             getElement()->setJustification (oldValue, false);
@@ -430,16 +430,16 @@ private:
             element->getDocument()->addChangeListener (this);
         }
 
-        ~FontNameProperty() override
+        ~FontNameProperty()
         {
             element->getDocument()->removeChangeListener (this);
         }
 
-        void setTypefaceName (const String& newFontName) override    { element->setTypefaceName (newFontName, true); }
-        String getTypefaceName() const override                      { return element->getTypefaceName(); }
+        void setTypefaceName (const String& newFontName)    { element->setTypefaceName (newFontName, true); }
+        String getTypefaceName() const                      { return element->getTypefaceName(); }
 
     private:
-        void changeListenerCallback (ChangeBroadcaster*) override                 { refresh(); }
+        void changeListenerCallback (ChangeBroadcaster*)                 { refresh(); }
 
         PaintElementText* const element;
     };
@@ -458,7 +458,7 @@ private:
             updateStylesList (element->getTypefaceName());
         }
 
-        ~FontStyleProperty() override
+        ~FontStyleProperty()
         {
             element->getDocument()->removeChangeListener (this);
         }
@@ -485,7 +485,7 @@ private:
             refresh();
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             Font f (element->getFont());
 
@@ -505,7 +505,7 @@ private:
             element->setFont (f, true);
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             auto f = element->getFont();
 
@@ -526,7 +526,7 @@ private:
         }
 
     private:
-        void changeListenerCallback (ChangeBroadcaster*) override
+        void changeListenerCallback (ChangeBroadcaster*)
         {
             updateStylesList (element->getTypefaceName());
         }
@@ -656,12 +656,12 @@ private:
         {
         }
 
-        void buttonClicked() override
+        void buttonClicked()
         {
             element->convertToPath();
         }
 
-        String getButtonText() const override
+        String getButtonText() const
         {
             return "convert text to a path";
         }

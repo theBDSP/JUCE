@@ -89,7 +89,7 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         PaintElement* newElement = routine.addElementFromXml (*xml, -1, false);
@@ -100,14 +100,14 @@ public:
         return indexAdded >= 0;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         routine.removeElement (routine.getElement (indexAdded), false);
         return true;
     }
 
-    int getSizeInUnits() override    { return 10; }
+    int getSizeInUnits()    { return 10; }
 
     int indexAdded;
 
@@ -172,21 +172,21 @@ public:
         oldIndex = routine.indexOfElement (element);
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         routine.removeElement (getElement(), false);
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         PaintElement* newElement = routine.addElementFromXml (*xml, oldIndex, false);
         showCorrectTab();
         return newElement != nullptr;
     }
 
-    int getSizeInUnits() override    { return 10; }
+    int getSizeInUnits()    { return 10; }
 
 private:
     std::unique_ptr<XmlElement> xml;
@@ -228,7 +228,7 @@ public:
         oldIndex = routine.indexOfElement (element);
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
 
@@ -238,7 +238,7 @@ public:
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         routine.moveElementZOrder (newIndex, oldIndex);

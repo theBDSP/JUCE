@@ -2326,8 +2326,7 @@ int Project::getARAContentTypes() const noexcept
 {
     int res = 0;
 
-    if (const auto analyzableContent = pluginARAAnalyzableContentValue.get();
-        auto* arr = analyzableContent.getArray())
+    if (auto* arr = pluginARAAnalyzableContentValue.get().getArray())
     {
         for (auto c : *arr)
             res |= (int) c;
@@ -2340,8 +2339,7 @@ int Project::getARATransformationFlags() const noexcept
 {
     int res = 0;
 
-    if (const auto transformFlags = pluginARATransformFlagsValue.get();
-        auto* arr = transformFlags.getArray())
+    if (auto* arr = pluginARATransformFlagsValue.get().getArray())
     {
         for (auto c : *arr)
             res |= (int) c;

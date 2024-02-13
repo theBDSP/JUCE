@@ -418,7 +418,7 @@ private:
             choices.add ("Tabs at right");
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             const TabbedButtonBar::Orientation orientations[] = { TabbedButtonBar::TabsAtTop,
                                                                   TabbedButtonBar::TabsAtBottom,
@@ -429,7 +429,7 @@ private:
                               "Change TabComponent orientation");
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             switch (component->getOrientation())
             {
@@ -454,7 +454,7 @@ private:
                 oldState = comp->getOrientation();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setOrientation (newState);
@@ -462,7 +462,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setOrientation (oldState);
@@ -485,13 +485,13 @@ private:
                 choices.add ("Tab " + String (i) + ": \"" + comp->getTabNames() [i] + "\"");
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             document.perform (new InitialTabChangeAction (component, *document.getComponentLayout(), newIndex),
                               "Change initial tab");
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             return component->getCurrentTabIndex();
         }
@@ -507,7 +507,7 @@ private:
                 oldValue = comp->getCurrentTabIndex();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setCurrentTabIndex (newValue);
@@ -515,7 +515,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setCurrentTabIndex (oldValue);
@@ -578,7 +578,7 @@ private:
                 oldState = comp->getTabBarDepth();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setTabBarDepth (newState);
@@ -586,7 +586,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setTabBarDepth (oldState);
@@ -609,13 +609,13 @@ private:
         {
         }
 
-        void buttonClicked() override
+        void buttonClicked()
         {
             document.perform (new AddTabAction (component, *document.getComponentLayout()),
                               "Add a new tab");
         }
 
-        String getButtonText() const override
+        String getButtonText() const
         {
             return "Create a new tab";
         }
@@ -632,7 +632,7 @@ private:
             {
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 addNewTab (getComponent());
@@ -641,7 +641,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->removeTab (getComponent()->getNumTabs() - 1);
@@ -663,7 +663,7 @@ private:
         {
         }
 
-        void buttonClicked() override
+        void buttonClicked()
         {
             const StringArray names (component->getTabNames());
 
@@ -681,7 +681,7 @@ private:
             });
         }
 
-        String getButtonText() const override
+        String getButtonText() const
         {
             return "Delete a tab...";
         }
@@ -700,7 +700,7 @@ private:
                 previousState = getTabState (comp, indexToRemove);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
 
@@ -710,7 +710,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 addNewTab (getComponent(), indexToRemove);
@@ -761,7 +761,7 @@ private:
                 oldValue = comp->getTabNames() [tabIndex];
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setTabName (tabIndex, newValue);
@@ -769,7 +769,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setTabName (tabIndex, oldValue);
@@ -839,7 +839,7 @@ private:
                 oldValue = comp->getTabBackgroundColour (tabIndex);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setTabBackgroundColour (tabIndex, newValue);
@@ -847,7 +847,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setTabBackgroundColour (tabIndex, oldValue);
@@ -873,13 +873,13 @@ private:
             choices.add ("Named content component");
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             document.perform (new TabContentTypeChangeAction (component, *document.getComponentLayout(), tabIndex, newIndex == 0),
                               "Change tab content type");
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             return isTabUsingJucerComp (component, tabIndex) ? 0 : 1;
         }
@@ -898,7 +898,7 @@ private:
                 oldValue = isTabUsingJucerComp (comp, tabIndex);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setTabUsingJucerComp (getComponent(), tabIndex, newValue);
@@ -907,7 +907,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setTabUsingJucerComp (getComponent(), tabIndex, oldValue);
@@ -973,7 +973,7 @@ private:
                 oldState = getTabJucerFile (comp, tabIndex);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setTabJucerFile (getComponent(), tabIndex, newState);
@@ -981,7 +981,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setTabJucerFile (getComponent(), tabIndex, oldState);
@@ -1029,7 +1029,7 @@ private:
                 oldValue = getTabClassName (comp, tabIndex);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setTabClassName (getComponent(), tabIndex, newValue);
@@ -1038,7 +1038,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setTabClassName (getComponent(), tabIndex, oldValue);
@@ -1087,7 +1087,7 @@ private:
                 oldValue = getTabConstructorParams (comp, tabIndex);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setTabConstructorParams (getComponent(), tabIndex, newValue);
@@ -1096,7 +1096,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setTabConstructorParams (getComponent(), tabIndex, oldValue);
@@ -1122,9 +1122,10 @@ private:
               tabIndex (tabIndex_),
               totalNumTabs (totalNumTabs_)
         {
+
         }
 
-        void buttonClicked() override
+        void buttonClicked()
         {
             PopupMenu m;
             m.addItem (1, "Move this tab up", tabIndex > 0);
@@ -1139,7 +1140,7 @@ private:
             });
         }
 
-        String getButtonText() const override
+        String getButtonText() const
         {
             return "Move this tab...";
         }
@@ -1175,13 +1176,13 @@ private:
                 changed();
             }
 
-            bool perform() override
+            bool perform()
             {
                 move (oldIndex, newIndex);
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 move (newIndex, oldIndex);
                 return true;

@@ -89,14 +89,18 @@ template <> struct ContainerDeletePolicy<const __CFString>   { static void destr
 // make sure the audio processor is initialized before the AUBase class
 struct AudioProcessorHolder
 {
-    AudioProcessorHolder()
+    AudioProcessorHolder (bool initialiseGUI)
     {
+        if (initialiseGUI)
+            initialiseJuce_GUI();
+
+        juceFilter = createPluginFilterOfType (AudioProcessor::wrapperType_AudioUnit);
+
         // audio units do not have a notion of enabled or un-enabled buses
         juceFilter->enableAllBuses();
     }
 
-    ScopedJuceInitialiser_GUI scopedInitialiser;
-    std::unique_ptr<AudioProcessor> juceFilter { createPluginFilterOfType (AudioProcessor::wrapperType_AudioUnit) };
+    std::unique_ptr<AudioProcessor> juceFilter;
 };
 
 //==============================================================================
@@ -107,7 +111,8 @@ class JuceAU final : public AudioProcessorHolder,
 {
 public:
     JuceAU (AudioUnit component)
-        : MusicDeviceBase (component,
+        : AudioProcessorHolder (activePlugins.size() + activeUIs.size() == 0),
+          MusicDeviceBase (component,
                            (UInt32) AudioUnitHelpers::getBusCountForWrapper (*juceFilter, true),
                            (UInt32) AudioUnitHelpers::getBusCountForWrapper (*juceFilter, false))
     {
@@ -168,6 +173,9 @@ public:
 
         jassert (activePlugins.contains (this));
         activePlugins.removeFirstMatchingValue (this);
+
+        if (activePlugins.size() + activeUIs.size() == 0)
+            shutdownJuce_GUI();
     }
 
     //==============================================================================
@@ -1715,7 +1723,6 @@ public:
         }
 
     private:
-        ScopedJuceInitialiser_GUI scopedInitialiser;
         Rectangle<int> lastBounds;
 
         JUCE_DECLARE_NON_COPYABLE (EditorCompHolder)
@@ -1816,6 +1823,8 @@ public:
                 // there's some kind of component currently modal, but the host
                 // is trying to delete our plugin..
                 jassert (Component::getCurrentlyModalComponent() == nullptr);
+
+                shutdownJuce_GUI();
             }
         }
     };

@@ -143,13 +143,13 @@ private:
             choices.add ("multi-line, return key disabled");
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             document.perform (new TextEditorMultilineChangeAction (component, *document.getComponentLayout(), newIndex),
                               "Change TextEditor multiline mode");
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             return component->isMultiLine() ? (component->getReturnKeyStartsNewLine() ? 1 : 2) : 0;
         }
@@ -165,7 +165,7 @@ private:
                 oldState = comp->isMultiLine() ? (comp->getReturnKeyStartsNewLine() ? 1 : 2) : 0;
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setMultiLine (newState > 0);
@@ -174,7 +174,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setMultiLine (oldState > 0);
@@ -196,13 +196,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new TextEditorReadonlyChangeAction (component, *document.getComponentLayout(), ! newState),
                               "Change TextEditor read-only mode");
         }
 
-        bool getState() const override        { return ! component->isReadOnly(); }
+        bool getState() const        { return ! component->isReadOnly(); }
 
     private:
         class TextEditorReadonlyChangeAction  : public ComponentUndoableAction <TextEditor>
@@ -215,7 +215,7 @@ private:
                 oldState = comp->isReadOnly();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setReadOnly (newState);
@@ -223,7 +223,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setReadOnly (oldState);
@@ -244,13 +244,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new TextEditorScrollbarChangeAction (component, *document.getComponentLayout(), newState),
                               "Change TextEditor scrollbars");
         }
 
-        bool getState() const override        { return component->areScrollbarsShown(); }
+        bool getState() const        { return component->areScrollbarsShown(); }
 
     private:
         class TextEditorScrollbarChangeAction  : public ComponentUndoableAction <TextEditor>
@@ -263,7 +263,7 @@ private:
                 oldState = comp->areScrollbarsShown();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setScrollbarsShown (newState);
@@ -271,7 +271,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setScrollbarsShown (oldState);
@@ -292,13 +292,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new TextEditorCaretChangeAction (component, *document.getComponentLayout(), newState),
                               "Change TextEditor caret");
         }
 
-        bool getState() const override        { return component->isCaretVisible(); }
+        bool getState() const        { return component->isCaretVisible(); }
 
     private:
         class TextEditorCaretChangeAction  : public ComponentUndoableAction <TextEditor>
@@ -311,7 +311,7 @@ private:
                 oldState = comp->isCaretVisible();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setCaretVisible (newState);
@@ -319,7 +319,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setCaretVisible (oldState);
@@ -340,13 +340,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new TextEditorPopupMenuChangeAction (component, *document.getComponentLayout(), newState),
                               "Change TextEditor popup menu");
         }
 
-        bool getState() const override        { return component->isPopupMenuEnabled(); }
+        bool getState() const        { return component->isPopupMenuEnabled(); }
 
     private:
         class TextEditorPopupMenuChangeAction  : public ComponentUndoableAction <TextEditor>
@@ -359,7 +359,7 @@ private:
                 oldState = comp->isPopupMenuEnabled();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setPopupMenuEnabled (newState);
@@ -367,7 +367,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setPopupMenuEnabled (oldState);
@@ -409,7 +409,7 @@ private:
                 oldState = comp->getProperties() ["initialText"];
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setText (newState, false);
@@ -418,7 +418,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setText (oldState, false);

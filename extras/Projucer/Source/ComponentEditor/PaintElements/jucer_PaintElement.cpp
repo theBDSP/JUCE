@@ -101,14 +101,14 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         getElement()->setPosition (newState, false);
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         getElement()->setPosition (oldState, false);
@@ -128,14 +128,14 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         getElement()->setBounds (newBounds);
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         getElement()->setBounds (oldBounds);
@@ -159,7 +159,7 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
 
@@ -170,7 +170,7 @@ public:
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
 
@@ -309,7 +309,7 @@ public:
         listener.setPropertyToRefresh (*this);
     }
 
-    void setPosition (const RelativePositionedRectangle& newPos) override
+    void setPosition (const RelativePositionedRectangle& newPos)
     {
         if (element->getOwner()->getSelectedElements().getNumSelected() > 1)
             positionOtherSelectedElements (getPosition(), newPos);
@@ -317,7 +317,7 @@ public:
         listener.owner->setPosition (newPos, true);
     }
 
-    RelativePositionedRectangle getPosition() const override
+    RelativePositionedRectangle getPosition() const
     {
         return listener.owner->getPosition();
     }

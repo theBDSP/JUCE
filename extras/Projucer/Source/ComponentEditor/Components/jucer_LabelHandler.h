@@ -236,7 +236,7 @@ private:
                 oldState = comp->getText();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setText (newState, dontSendNotification);
@@ -244,7 +244,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setText (oldState, dontSendNotification);
@@ -268,13 +268,13 @@ private:
             choices.add ("edit on double-click");
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             document.perform (new LabelEditableChangeAction (component, *document.getComponentLayout(), newIndex),
                               "Change Label editability");
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             return component->isEditableOnSingleClick()
                     ? 1
@@ -294,7 +294,7 @@ private:
                             : (comp->isEditableOnDoubleClick() ? 2 : 0);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setEditable (newState == 1, newState >= 1, getComponent()->doesLossOfFocusDiscardChanges());
@@ -303,7 +303,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setEditable (oldState == 1, oldState >= 1, getComponent()->doesLossOfFocusDiscardChanges());
@@ -327,13 +327,13 @@ private:
             choices.add ("loss of focus commits changes");
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             document.perform (new LabelFocusLossChangeAction (component, *document.getComponentLayout(), newIndex == 0),
                               "Change Label focus behaviour");
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             return component->doesLossOfFocusDiscardChanges() ? 0 : 1;
         }
@@ -349,7 +349,7 @@ private:
                 oldState = comp->doesLossOfFocusDiscardChanges();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setEditable (getComponent()->isEditableOnSingleClick(),
@@ -359,7 +359,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setEditable (getComponent()->isEditableOnSingleClick(),
@@ -418,7 +418,7 @@ private:
             {
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setJustificationType (newState);
@@ -426,7 +426,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setJustificationType (oldState);
@@ -483,7 +483,7 @@ private:
                 oldState = comp->getProperties().getWithDefault ("typefaceName", FontPropertyComponent::getDefaultFont());
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->getProperties().set ("typefaceName", newState);
@@ -492,7 +492,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->getProperties().set ("typefaceName", oldState);
@@ -552,7 +552,7 @@ private:
                 oldState = comp->getFont().getHeight();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 Font f (getComponent()->getFont());
@@ -562,7 +562,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 Font f (getComponent()->getFont());
@@ -678,7 +678,7 @@ private:
                 oldState = comp->getFont();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setFont (newState);
@@ -686,7 +686,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setFont (oldState);
@@ -748,7 +748,7 @@ private:
                 oldState = comp->getFont().getExtraKerningFactor();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 Font f (getComponent()->getFont());
@@ -758,7 +758,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 Font f (getComponent()->getFont());

@@ -41,25 +41,25 @@ public:
     PaintRoutineEditor (PaintRoutine& graphics,
                         JucerDocument& document,
                         JucerDocumentEditor* const docHolder);
-    ~PaintRoutineEditor() override;
+    ~PaintRoutineEditor();
 
     //==============================================================================
-    void paint (Graphics& g) override;
-    void paintOverChildren (Graphics& g) override;
-    void resized() override;
-    void changeListenerCallback (ChangeBroadcaster*) override;
+    void paint (Graphics& g);
+    void paintOverChildren (Graphics& g);
+    void resized();
+    void changeListenerCallback (ChangeBroadcaster*);
 
-    void mouseDown (const MouseEvent& e) override;
-    void mouseDrag (const MouseEvent& e) override;
-    void mouseUp (const MouseEvent& e) override;
-    void visibilityChanged() override;
+    void mouseDown (const MouseEvent& e);
+    void mouseDrag (const MouseEvent& e);
+    void mouseUp (const MouseEvent& e);
+    void visibilityChanged();
 
-    void findLassoItemsInArea (Array <PaintElement*>& results, const Rectangle<int>& area) override;
+    void findLassoItemsInArea (Array <PaintElement*>& results, const Rectangle<int>& area);
 
-    SelectedItemSet <PaintElement*>& getLassoSelection() override;
+    SelectedItemSet <PaintElement*>& getLassoSelection();
 
-    bool isInterestedInFileDrag (const StringArray& files) override;
-    void filesDropped (const StringArray& filenames, int x, int y) override;
+    bool isInterestedInFileDrag (const StringArray& files);
+    void filesDropped (const StringArray& filenames, int x, int y);
 
     Rectangle<int> getComponentArea() const;
 

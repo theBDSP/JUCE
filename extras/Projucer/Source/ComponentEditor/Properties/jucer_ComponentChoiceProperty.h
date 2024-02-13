@@ -42,12 +42,12 @@ public:
         document.addChangeListener (this);
     }
 
-    ~ComponentChoiceProperty() override
+    ~ComponentChoiceProperty()
     {
         document.removeChangeListener (this);
     }
 
-    void changeListenerCallback (ChangeBroadcaster*) override
+    void changeListenerCallback (ChangeBroadcaster*)
     {
         refresh();
     }

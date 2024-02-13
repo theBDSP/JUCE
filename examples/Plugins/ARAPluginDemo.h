@@ -515,9 +515,7 @@ public:
 
     void willRemoveRegionSequence (ARA::PlugIn::RegionSequence* rs) noexcept override
     {
-        auto* rsToRemove = static_cast<ARARegionSequence*> (rs);
-        rsToRemove->removeListener (this);
-        regionSequences.erase (rsToRemove);
+        regionSequences.erase (static_cast<ARARegionSequence*> (rs));
     }
 
     void didAddPlaybackRegion (ARA::PlugIn::PlaybackRegion*) noexcept override

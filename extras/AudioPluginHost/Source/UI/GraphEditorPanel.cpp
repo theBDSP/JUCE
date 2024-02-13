@@ -74,7 +74,7 @@
      {
          ScanJob (AUScanner& s)  : ThreadPoolJob ("pluginscan"), scanner (s) {}
 
-         JobStatus runJob() override
+         JobStatus runJob()
          {
              while (scanner.doNextScan() && ! shouldExit())
              {}

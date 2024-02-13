@@ -60,7 +60,7 @@ private:
         {
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             getComponent()->setName (newName);
@@ -68,7 +68,7 @@ private:
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             getComponent()->setName (oldName);
@@ -110,14 +110,14 @@ private:
         {
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             layout.setComponentMemberVariableName (getComponent(), newName);
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             layout.setComponentMemberVariableName (getComponent(), oldName);
@@ -159,14 +159,14 @@ private:
         {
         }
 
-        bool perform() override
+        bool perform()
         {
             showCorrectTab();
             layout.setComponentVirtualClassName (getComponent(), newName);
             return true;
         }
 
-        bool undo() override
+        bool undo()
         {
             showCorrectTab();
             layout.setComponentVirtualClassName (getComponent(), oldName);

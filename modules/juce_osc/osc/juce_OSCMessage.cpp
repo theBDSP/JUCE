@@ -107,7 +107,7 @@ public:
         : UnitTest ("OSCMessage class", UnitTestCategories::osc)
     {}
 
-    void runTest() override
+    void runTest()
     {
         beginTest ("Basic usage");
         {

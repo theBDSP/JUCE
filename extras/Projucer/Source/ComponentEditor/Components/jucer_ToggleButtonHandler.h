@@ -102,13 +102,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new ToggleStateChangeAction (component, *document.getComponentLayout(), newState),
                               "Change ToggleButton state");
         }
 
-        bool getState() const override
+        bool getState() const
         {
             return component->getToggleState();
         }
@@ -124,7 +124,7 @@ private:
                 oldState = comp->getToggleState();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setToggleState (newState, dontSendNotification);
@@ -132,7 +132,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setToggleState (oldState, dontSendNotification);

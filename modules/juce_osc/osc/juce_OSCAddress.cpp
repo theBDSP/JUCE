@@ -406,7 +406,7 @@ public:
         : UnitTest ("OSCAddress class", UnitTestCategories::osc)
     {}
 
-    void runTest() override
+    void runTest()
     {
         beginTest ("construction and parsing");
         {
@@ -452,7 +452,7 @@ public:
         : UnitTest ("OSCAddressPattern class", UnitTestCategories::osc)
     {}
 
-    void runTest() override
+    void runTest()
     {
         beginTest ("construction and parsing");
         {
@@ -593,7 +593,7 @@ public:
         : UnitTest ("OSCAddress class / pattern matching", UnitTestCategories::osc)
     {}
 
-    void runTest() override
+    void runTest()
     {
         beginTest ("basic string matching");
         {

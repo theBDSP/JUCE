@@ -48,15 +48,13 @@ private:
         if (mb.isEmpty())
             return;
 
-        const std::lock_guard<std::mutex> lock (mutex);
+        if (! doScan (mb))
+        {
+            {
+                const std::lock_guard<std::mutex> lock (mutex);
+                pendingBlocks.emplace (mb);
+            }
 
-        if (const auto results = doScan (mb); ! results.isEmpty())
-        {
-            sendResults (results);
-        }
-        else
-        {
-            pendingBlocks.emplace (mb);
             triggerAsyncUpdate();
         }
     }
@@ -70,17 +68,26 @@ private:
     {
         for (;;)
         {
-            const std::lock_guard<std::mutex> lock (mutex);
+            const auto block = [&]() -> MemoryBlock
+            {
+                const std::lock_guard<std::mutex> lock (mutex);
 
-            if (pendingBlocks.empty())
+                if (pendingBlocks.empty())
+                    return {};
+
+                auto out = std::move (pendingBlocks.front());
+                pendingBlocks.pop();
+                return out;
+            }();
+
+            if (block.isEmpty())
                 return;
 
-            sendResults (doScan (pendingBlocks.front()));
-            pendingBlocks.pop();
+            doScan (block);
         }
     }
 
-    OwnedArray<PluginDescription> doScan (const MemoryBlock& block)
+    bool doScan (const MemoryBlock& block)
     {
         MemoryInputStream stream { block, false };
         const auto formatName = stream.readString();
@@ -99,19 +106,20 @@ private:
             return nullptr;
         }();
 
-        OwnedArray<PluginDescription> results;
-
-        if (matchingFormat != nullptr
-            && (MessageManager::getInstance()->isThisTheMessageThread()
-                || matchingFormat->requiresUnblockedMessageThreadDuringCreation (pd)))
+        if (matchingFormat == nullptr
+            || (! MessageManager::getInstance()->isThisTheMessageThread()
+                && ! matchingFormat->requiresUnblockedMessageThreadDuringCreation (pd)))
         {
-            matchingFormat->findAllTypesForFile (results, identifier);
+            return false;
         }
 
-        return results;
+        OwnedArray<PluginDescription> results;
+        matchingFormat->findAllTypesForFile (results, identifier);
+        sendPluginDescriptions (results);
+        return true;
     }
 
-    void sendResults (const OwnedArray<PluginDescription>& results)
+    void sendPluginDescriptions (const OwnedArray<PluginDescription>& results)
     {
         XmlElement xml ("LIST");
 
@@ -124,6 +132,9 @@ private:
 
     std::mutex mutex;
     std::queue<MemoryBlock> pendingBlocks;
+
+    // After construction, this will only be accessed by doScan so there's no need
+    // to worry about synchronisation.
     AudioPluginFormatManager formatManager;
 };
 

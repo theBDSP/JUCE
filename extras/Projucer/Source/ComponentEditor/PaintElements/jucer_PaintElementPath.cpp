@@ -52,12 +52,12 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         return changeTo (newValue);
     }
 
-    bool undo() override
+    bool undo()
     {
         return changeTo (oldValue);
     }
@@ -748,14 +748,14 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         getElement()->setNonZeroWinding (newValue, false);
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         getElement()->setNonZeroWinding (oldValue, false);
@@ -846,7 +846,7 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
 
@@ -862,7 +862,7 @@ public:
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
 
@@ -952,7 +952,7 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
 
@@ -963,7 +963,7 @@ public:
         return path != nullptr;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
 
@@ -1292,17 +1292,17 @@ public:
         owner->getDocument()->addChangeListener (this);
     }
 
-    ~PathPointPositionProperty() override
+    ~PathPointPositionProperty()
     {
         owner->getDocument()->removeChangeListener (this);
     }
 
-    void setPosition (const RelativePositionedRectangle& newPos) override
+    void setPosition (const RelativePositionedRectangle& newPos)
     {
         owner->setPoint (index, pointNumber, newPos, true);
     }
 
-    RelativePositionedRectangle getPosition() const override
+    RelativePositionedRectangle getPosition() const
     {
         return owner->getPoint (index, pointNumber);
     }
@@ -1328,22 +1328,22 @@ public:
         choices.add ("Subpath is open-ended");
     }
 
-    ~PathPointClosedProperty() override
+    ~PathPointClosedProperty()
     {
         owner->getDocument()->removeChangeListener (this);
     }
 
-    void changeListenerCallback (ChangeBroadcaster*) override
+    void changeListenerCallback (ChangeBroadcaster*)
     {
         refresh();
     }
 
-    void setIndex (int newIndex) override
+    void setIndex (int newIndex)
     {
         owner->setSubpathClosed (index, newIndex == 0, true);
     }
 
-    int getIndex() const override
+    int getIndex() const
     {
         return owner->isSubpathClosed (index) ? 0 : 1;
     }
@@ -1364,12 +1364,12 @@ public:
     {
     }
 
-    void buttonClicked() override
+    void buttonClicked()
     {
         owner->addPoint (index, true);
     }
 
-    String getButtonText() const override      { return "Add new point"; }
+    String getButtonText() const      { return "Add new point"; }
 
 private:
     PaintElementPath* const owner;

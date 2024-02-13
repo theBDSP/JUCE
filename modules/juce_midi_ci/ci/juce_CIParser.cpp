@@ -89,7 +89,7 @@ class DescriptionVisitor : public detail::MessageTypeUtils::MessageVisitor
 public:
     DescriptionVisitor (const Message::Parsed* m, String* str) : msg (m), result (str) {}
 
-    void visit (const std::monostate&)                                        const override {}
+    void visit (const std::monostate&)                                        const override { *result = "!! Unrecognised !!"; }
     void visit (const Message::Discovery& body)                               const override { visitImpl (body); }
     void visit (const Message::DiscoveryResponse& body)                       const override { visitImpl (body); }
     void visit (const Message::InvalidateMUID& body)                          const override { visitImpl (body); }
@@ -162,32 +162,10 @@ private:
     {
         const auto opts = ToVarOptions{}.withExplicitVersion ((int) msg->header.version)
                                         .withVersionIncluded (false);
-        auto json = ToVar::convert (body, opts);
-
-        if (auto* obj = json->getDynamicObject(); obj != nullptr && obj->hasProperty ("header"))
-        {
-            const auto header = obj->getProperty ("header");
-            const auto bytes = [&]() -> std::vector<std::byte>
-            {
-                const auto* arr = header.getArray();
-
-                if (arr == nullptr)
-                    return {};
-
-                std::vector<std::byte> vec;
-                vec.reserve ((size_t) arr->size());
-
-                for (const auto& i : *arr)
-                    vec.push_back ((std::byte) (int) i);
-
-                return vec;
-            }();
-
-            obj->setProperty ("header", Encodings::jsonFrom7BitText (bytes));
-        }
+        const auto json = ToVar::convert (body, opts);
 
         if (json.has_value())
-            *result = String (getDescription (body)) + ": " + JSON::toString (*json, JSON::FormatOptions{}.withSpacing (JSON::Spacing::none));
+            *result = String (getDescription (body)) + ": " + JSON::toString (*json, true);
     }
 
     const Message::Parsed* msg = nullptr;
@@ -196,7 +174,7 @@ private:
 
 String Parser::getMessageDescription (const Message::Parsed& message)
 {
-    String result { "!! Unrecognised !!" };
+    String result;
     detail::MessageTypeUtils::visit (message, DescriptionVisitor { &message, &result });
     return result;
 }

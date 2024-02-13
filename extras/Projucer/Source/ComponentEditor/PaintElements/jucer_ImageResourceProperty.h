@@ -59,7 +59,7 @@ public:
         document.addChangeListener (this);
     }
 
-    ~ImageResourceProperty() override
+    ~ImageResourceProperty()
     {
         document.removeChangeListener (this);
     }
@@ -70,7 +70,7 @@ public:
     virtual String getResource() const = 0;
 
     //==============================================================================
-    void setIndex (int newIndex) override
+    void setIndex (int newIndex)
     {
         if (newIndex == 0)
         {
@@ -94,7 +94,7 @@ public:
         }
     }
 
-    int getIndex() const override
+    int getIndex() const
     {
         if (getResource().isEmpty())
             return -1;
@@ -102,7 +102,7 @@ public:
         return choices.indexOf (getResource());
     }
 
-    void changeListenerCallback (ChangeBroadcaster*) override
+    void changeListenerCallback (ChangeBroadcaster*)
     {
         refresh();
     }

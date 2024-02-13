@@ -73,8 +73,8 @@ private:
     {
         UngroupProperty (PaintElementGroup* const);
 
-        void buttonClicked() override;
-        String getButtonText() const override;
+        void buttonClicked();
+        String getButtonText() const;
 
         PaintElementGroup* element;
     };

@@ -102,7 +102,7 @@ public:
         return block;
     }
 
-    void runTest() override
+    void runTest()
     {
         runTestInitialisation();
     }

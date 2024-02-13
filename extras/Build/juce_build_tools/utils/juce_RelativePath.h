@@ -107,12 +107,21 @@ namespace juce::build_tools
 
         File getFakeFile() const
         {
-            const auto unixStylePath = toUnixStyle();
-            const auto name = unixStylePath.substring (unixStylePath.lastIndexOfChar ('/') + 1);
+           #if JUCE_WINDOWS
+            if (isAbsolutePath (path))
+            {
+                // This is a hack to convert unix-style absolute paths into valid absolute Windows paths to avoid hitting
+                // an assertion in File::parseAbsolutePath().
+                if (path.startsWithChar (L'/') || path.startsWithChar (L'$') || path.startsWithChar (L'~'))
+                    return File (String ("C:\\") + windowsStylePath (path.substring (1)));
+
+                return File (path);
+            }
+           #endif
 
             // This method gets called very often, so we'll cache this directory.
             static const File currentWorkingDirectory (File::getCurrentWorkingDirectory());
-            return currentWorkingDirectory.getChildFile (name);
+            return currentWorkingDirectory.getChildFile (path);
         }
     };
 

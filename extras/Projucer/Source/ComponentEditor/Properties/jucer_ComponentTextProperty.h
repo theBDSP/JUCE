@@ -44,12 +44,12 @@ public:
         document.addChangeListener (this);
     }
 
-    ~ComponentTextProperty() override
+    ~ComponentTextProperty()
     {
         document.removeChangeListener (this);
     }
 
-    void changeListenerCallback (ChangeBroadcaster*) override
+    void changeListenerCallback (ChangeBroadcaster*)
     {
         refresh();
     }

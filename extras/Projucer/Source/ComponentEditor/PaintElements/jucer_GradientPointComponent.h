@@ -41,7 +41,7 @@ public:
     {
     }
 
-    RelativePositionedRectangle getPosition() override
+    RelativePositionedRectangle getPosition()
     {
         ColouredElement* e = dynamic_cast<ColouredElement*> (owner);
 
@@ -53,7 +53,7 @@ public:
                        : e->getFillType().gradPos2;
     }
 
-    void setPosition (const RelativePositionedRectangle& newPos) override
+    void setPosition (const RelativePositionedRectangle& newPos)
     {
         ColouredElement* e = dynamic_cast<ColouredElement*> (owner);
 
@@ -81,7 +81,7 @@ public:
         }
     }
 
-    void updatePosition() override
+    void updatePosition()
     {
         PointComponent::updatePosition();
 

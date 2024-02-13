@@ -37,7 +37,7 @@ public:
         updateBounds (content.get());
     }
 
-    void childBoundsChanged (Component* child) override
+    void childBoundsChanged (Component* child)
     {
         updateBounds (child);
     }
@@ -69,7 +69,7 @@ public:
     {
     }
 
-    void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
+    void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel)
     {
         if (e.mods.isCtrlDown() || e.mods.isAltDown() || e.mods.isCommandDown())
             mouseMagnify (e, 1.0f / (1.0f - wheel.deltaY));
@@ -77,7 +77,7 @@ public:
             Viewport::mouseWheelMove (e, wheel);
     }
 
-    void mouseMagnify (const MouseEvent& e, float factor) override
+    void mouseMagnify (const MouseEvent& e, float factor)
     {
         panel->setZoom (panel->getZoom() * factor, e.x, e.y);
     }
@@ -116,7 +116,7 @@ private:
             setAlwaysOnTop (true);
         }
 
-        void mouseDown (const MouseEvent&) override
+        void mouseDown (const MouseEvent&)
         {
             if (Viewport* viewport = findParentComponentOfClass<Viewport>())
             {
@@ -125,7 +125,7 @@ private:
             }
         }
 
-        void mouseDrag (const MouseEvent& e) override
+        void mouseDrag (const MouseEvent& e)
         {
             if (Viewport* viewport = findParentComponentOfClass<Viewport>())
                 viewport->setViewPosition (jlimit (0, jmax (0, viewport->getViewedComponent()->getWidth() - viewport->getViewWidth()),

@@ -78,7 +78,7 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         Component* const newComp = layout.addComponentFromXml (*xml, false);
@@ -89,14 +89,14 @@ public:
         return indexRef >= 0;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         layout.removeComponent (layout.getComponent (indexRef), false);
         return true;
     }
 
-    int getSizeInUnits() override    { return 10; }
+    int getSizeInUnits()    { return 10; }
 
     int& indexRef;
 
@@ -130,14 +130,14 @@ public:
         oldIndex = l.indexOfComponent (comp);
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         layout.removeComponent (getComponent(), false);
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         Component* c = layout.addComponentFromXml (*xml, false);
         jassert (c != nullptr);
@@ -183,7 +183,7 @@ public:
         oldIndex = l.indexOfComponent (comp);
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         Component* comp = layout.getComponent (oldIndex);
@@ -192,7 +192,7 @@ public:
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         layout.moveComponentZOrder (newIndex, oldIndex);
@@ -599,14 +599,14 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         layout.setComponentPosition (getComponent(), newPos, false);
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         layout.setComponentPosition (getComponent(), oldPos, false);
@@ -630,7 +630,7 @@ public:
     {
     }
 
-    bool perform() override
+    bool perform()
     {
         showCorrectTab();
         getComponent()->setBounds (newBounds);
@@ -639,7 +639,7 @@ public:
         return true;
     }
 
-    bool undo() override
+    bool undo()
     {
         showCorrectTab();
         getComponent()->setBounds (oldBounds);

@@ -29,7 +29,8 @@ namespace juce::midi_ci
 class PropertyExchangeCache
 {
 public:
-    PropertyExchangeCache() = default;
+    explicit PropertyExchangeCache (std::function<void()> term)
+        : onTerminate (std::move (term)) {}
 
     struct OwningResult
     {
@@ -65,20 +66,16 @@ public:
 
         const auto headerJson = JSON::parse (String (headerStorage.data(), headerStorage.size()));
 
-        terminate();
+        onTerminate = nullptr;
         const auto encodingString = headerJson.getProperty ("mutualEncoding", "ASCII").toString();
 
         if (chunk.thisChunkNum != chunk.totalNumChunks)
             return std::optional<OwningResult> { std::in_place, PropertyExchangeResult::Error::partial };
 
-        const int status = headerJson.getProperty ("status", 200);
-
-        if (status == 343)
-            return std::optional<OwningResult> { std::in_place, PropertyExchangeResult::Error::tooManyTransactions };
-
         return std::optional<OwningResult> { std::in_place,
                                              headerJson,
                                              Encodings::decode (bodyStorage, EncodingUtils::toEncoding (encodingString.toRawUTF8()).value_or (Encoding::ascii)) };
+
     }
 
     std::optional<OwningResult> notify (Span<const std::byte> header)
@@ -93,20 +90,21 @@ public:
         if (! status.isInt() || (int) status == 100)
             return {};
 
-        terminate();
+        onTerminate = nullptr;
         return std::optional<OwningResult> { std::in_place, PropertyExchangeResult::Error::notify };
     }
 
-    bool terminate()
+    void terminate()
     {
-        return std::exchange (ongoing, false);
+        if (auto t = std::exchange (onTerminate, nullptr))
+            t();
     }
 
 private:
     std::vector<char> headerStorage;
     std::vector<std::byte> bodyStorage;
+    std::function<void()> onTerminate;
     uint16_t lastChunk = 0;
-    bool ongoing = true;
 };
 
 //==============================================================================
@@ -115,104 +113,52 @@ class PropertyExchangeCacheArray
 public:
     PropertyExchangeCacheArray() = default;
 
-    Token64 primeCacheForRequestId (uint8_t id, std::function<void (const PropertyExchangeResult&)> onDone)
+    ErasedScopeGuard primeCacheForRequestId (std::byte id,
+                                             std::function<void (const PropertyExchangeResult&)> onDone,
+                                             std::function<void()> onTerminate)
     {
-        jassert (id < caches.size());
+        auto& entry = caches[(uint8_t) id];
+        entry = std::make_shared<Transaction> (std::move (onDone), std::move (onTerminate));
+        auto weak = std::weak_ptr<Transaction> (entry);
 
-        ++lastKey;
-
-        auto& entry = caches[id];
-
-        if (entry.has_value())
+        return ErasedScopeGuard { [&entry, weak]
         {
-            // Trying to start a new message with the same id as another in-progress message
-            jassertfalse;
-            ids.erase (entry->key);
-        }
-
-        const auto& item = entry.emplace (id, std::move (onDone), Token64 { lastKey });
-        ids.emplace (item.key, id);
-        return item.key;
+            // If this fails, then the transaction finished before the ErasedScopeGuard was destroyed.
+            if (auto locked = weak.lock())
+            {
+                entry->cache.terminate();
+                entry = nullptr;
+            }
+        } };
     }
 
-    bool terminate (Token64 key)
-    {
-        const auto iter = ids.find (key);
-
-        // If the key isn't found, then the transaction must have completed already
-        if (iter == ids.end())
-            return false;
-
-        // We're about to terminate this transaction, so we don't need to retain this record
-        auto index = iter->second;
-        ids.erase (iter);
-
-        auto& entry = caches[index];
-
-        // If the entry is null, something's gone wrong. The ids map should only contain elements for
-        // non-null cache entries.
-        if (! entry.has_value())
-        {
-            jassertfalse;
-            return false;
-        }
-
-        const auto result = entry->cache.terminate();
-        entry.reset();
-        return result;
-    }
-
-    void addChunk (RequestID b, const Message::DynamicSizePropertyExchange& chunk)
+    void addChunk (std::byte b, const Message::DynamicSizePropertyExchange& chunk)
     {
         updateCache (b, [&] (PropertyExchangeCache& c) { return c.addChunk (chunk); });
     }
 
-    void notify (RequestID b, Span<const std::byte> header)
+    void notify (std::byte b, Span<const std::byte> header)
     {
         updateCache (b, [&] (PropertyExchangeCache& c) { return c.notify (header); });
     }
 
-    std::optional<Token64> getKeyForId (RequestID id) const
+    bool hasTransaction (std::byte id) const
     {
-        if (auto& c = caches[id.asInt()])
-            return c->key;
-
-        return {};
+        return caches[(uint8_t) id] != nullptr;
     }
 
-    bool hasTransaction (RequestID id) const
+    uint8_t countOngoingTransactions() const
     {
-        return getKeyForId (id).has_value();
+        return (uint8_t) std::count_if (caches.begin(), caches.end(), [] (auto& c) { return c != nullptr; });
     }
 
-    std::optional<RequestID> getIdForKey (Token64 key) const
-    {
-        const auto iter = ids.find (key);
-        return iter != ids.end() ? RequestID::create (iter->second) : std::nullopt;
-    }
-
-    auto countOngoingTransactions() const
-    {
-        jassert (ids.size() == (size_t) std::count_if (caches.begin(), caches.end(), [] (auto& c) { return c.has_value(); }));
-
-        return (int) ids.size();
-    }
-
-    auto getOngoingTransactions() const
-    {
-        jassert (ids.size() == (size_t) std::count_if (caches.begin(), caches.end(), [] (auto& c) { return c.has_value(); }));
-
-        std::vector<Token64> result (ids.size());
-        std::transform (ids.begin(), ids.end(), result.begin(), [] (const auto& p) { return Token64 { p.first }; });
-        return result;
-    }
-
-    std::optional<RequestID> findUnusedId (uint8_t maxSimultaneousTransactions) const
+    /** MSB of result is set on failure. */
+    std::byte findUnusedId (uint8_t maxSimultaneousTransactions) const
     {
         if (countOngoingTransactions() >= maxSimultaneousTransactions)
-            return {};
+            return std::byte { 0xff };
 
-        return RequestID::create ((uint8_t) std::distance (caches.begin(), std::find (caches.begin(), caches.end(), std::nullopt)));
+        return (std::byte) std::distance (caches.begin(), std::find (caches.begin(), caches.end(), nullptr));
     }
 
     // Instances must stay at the same location to ensure that references captured in the
@@ -226,66 +172,57 @@ private:
     class Transaction
     {
     public:
-        Transaction (uint8_t i, std::function<void (const PropertyExchangeResult&)> onSuccess, Token64 k)
-            : onFinish (std::move (onSuccess)), key (k), id (i) {}
+        Transaction (std::function<void (const PropertyExchangeResult&)> onSuccess,
+                     std::function<void()> onTerminate)
+            : cache (std::move (onTerminate)), onFinish (std::move (onSuccess)) {}
 
         PropertyExchangeCache cache;
         std::function<void (const PropertyExchangeResult&)> onFinish;
-        Token64 key{};
-        uint8_t id = 0;
     };
 
     template <typename WithCache>
-    void updateCache (RequestID b, WithCache&& withCache)
+    void updateCache (std::byte b, WithCache&& withCache)
     {
-        if (auto& entry = caches[b.asInt()])
+        if (auto& entry = caches[(uint8_t) b])
         {
             if (const auto result = withCache (entry->cache))
             {
-                const auto tmp = std::move (*entry);
-                ids.erase (tmp.key);
-                entry.reset();
-                NullCheckedInvocation::invoke (tmp.onFinish, result->result);
+                const auto tmp = std::move (entry->onFinish);
+                entry = nullptr;
+                NullCheckedInvocation::invoke (tmp, result->result);
             }
         }
     }
 
-    std::array<std::optional<Transaction>, numCaches> caches;
-    std::map<Token64, uint8_t> ids;
-    uint64_t lastKey = 0;
+    std::array<std::shared_ptr<Transaction>, numCaches> caches;
 };
 
 //==============================================================================
 class InitiatorPropertyExchangeCache::Impl
 {
 public:
-    std::optional<Token64> primeCache (uint8_t maxSimultaneousRequests,
-                                       std::function<void (const PropertyExchangeResult&)> onDone)
+    TokenAndId primeCache (uint8_t maxSimultaneousRequests,
+                           std::function<void (const PropertyExchangeResult&)> onDone,
+                           std::function<void (std::byte)> onTerminate)
     {
         const auto id = array.findUnusedId (maxSimultaneousRequests);
 
-        return id.has_value() ? std::optional<Token64> (array.primeCacheForRequestId (id->asInt(), std::move (onDone)))
-                              : std::nullopt;
+        if ((id & std::byte { 0x80 }) != std::byte{})
+        {
+            NullCheckedInvocation::invoke (onDone, PropertyExchangeResult { PropertyExchangeResult::Error::tooManyTransactions });
+            return {};
+        }
+
+        auto token = array.primeCacheForRequestId (id,
+                                                   std::move (onDone),
+                                                   [id, term = std::move (onTerminate)] { NullCheckedInvocation::invoke (term, id); });
+        return { std::move (token), id };
     }
 
-    bool terminate (Token64 token)
-    {
-        return array.terminate (token);
-    }
-
-    std::optional<Token64> getTokenForRequestId (RequestID id) const
-    {
-        return array.getKeyForId (id);
-    }
-
-    std::optional<RequestID> getRequestIdForToken (Token64 token) const
-    {
-        return array.getIdForKey (token);
-    }
-
-    void addChunk (RequestID b, const Message::DynamicSizePropertyExchange& chunk) { array.addChunk (b, chunk); }
-    void notify (RequestID b, Span<const std::byte> header) { array.notify (b, header); }
-    auto getOngoingTransactions() const { return array.getOngoingTransactions(); }
+    void addChunk (std::byte b, const Message::DynamicSizePropertyExchange& chunk) { array.addChunk (b, chunk); }
+    void notify (std::byte b, Span<const std::byte> header) { array.notify (b, header); }
+    int countOngoingTransactions() const { return array.countOngoingTransactions(); }
+    bool isAwaitingResponse() const { return countOngoingTransactions() != 0; }
 
 private:
     PropertyExchangeCacheArray array;
@@ -297,18 +234,17 @@ InitiatorPropertyExchangeCache::InitiatorPropertyExchangeCache (InitiatorPropert
 InitiatorPropertyExchangeCache& InitiatorPropertyExchangeCache::operator= (InitiatorPropertyExchangeCache&&) noexcept = default;
 InitiatorPropertyExchangeCache::~InitiatorPropertyExchangeCache() = default;
 
-std::optional<Token64> InitiatorPropertyExchangeCache::primeCache (uint8_t maxSimultaneousTransactions,
-                                                                   std::function<void (const PropertyExchangeResult&)> onDone)
+InitiatorPropertyExchangeCache::TokenAndId InitiatorPropertyExchangeCache::primeCache (uint8_t maxSimultaneousTransactions,
+                                                                                       std::function<void (const PropertyExchangeResult&)> onDone,
+                                                                                       std::function<void (std::byte)> onTerminate)
 {
-    return pimpl->primeCache (maxSimultaneousTransactions, std::move (onDone));
+    return pimpl->primeCache (maxSimultaneousTransactions, std::move (onDone), std::move (onTerminate));
 }
 
-bool InitiatorPropertyExchangeCache::terminate (Token64 token) { return pimpl->terminate (token); }
-std::optional<Token64> InitiatorPropertyExchangeCache::getTokenForRequestId (RequestID id) const { return pimpl->getTokenForRequestId (id); }
-std::optional<RequestID> InitiatorPropertyExchangeCache::getRequestIdForToken (Token64 token) const { return pimpl->getRequestIdForToken (token); }
-void InitiatorPropertyExchangeCache::addChunk (RequestID b, const Message::DynamicSizePropertyExchange& chunk) { pimpl->addChunk (b, chunk); }
-void InitiatorPropertyExchangeCache::notify (RequestID b, Span<const std::byte> header) { pimpl->notify (b, header); }
-std::vector<Token64> InitiatorPropertyExchangeCache::getOngoingTransactions() const { return pimpl->getOngoingTransactions(); }
+void InitiatorPropertyExchangeCache::addChunk (std::byte b, const Message::DynamicSizePropertyExchange& chunk) { pimpl->addChunk (b, chunk); }
+void InitiatorPropertyExchangeCache::notify (std::byte b, Span<const std::byte> header) { pimpl->notify (b, header); }
+int InitiatorPropertyExchangeCache::countOngoingTransactions() const { return pimpl->countOngoingTransactions(); }
+bool InitiatorPropertyExchangeCache::isAwaitingResponse() const { return pimpl->isAwaitingResponse(); }
 
 //==============================================================================
 class ResponderPropertyExchangeCache::Impl
@@ -316,7 +252,7 @@ class ResponderPropertyExchangeCache::Impl
 public:
     void primeCache (uint8_t maxSimultaneousTransactions,
                      std::function<void (const PropertyExchangeResult&)> onDone,
-                     RequestID id)
+                     std::byte id)
     {
         if (array.hasTransaction (id))
             return;
@@ -324,11 +260,11 @@ public:
         if (array.countOngoingTransactions() >= maxSimultaneousTransactions)
             NullCheckedInvocation::invoke (onDone, PropertyExchangeResult { PropertyExchangeResult::Error::tooManyTransactions });
         else
-            array.primeCacheForRequestId (id.asInt(), std::move (onDone));
+            array.primeCacheForRequestId (id, std::move (onDone), nullptr).release();
     }
 
-    void addChunk (RequestID b, const Message::DynamicSizePropertyExchange& chunk) { array.addChunk (b, chunk); }
-    void notify (RequestID b, Span<const std::byte> header) { array.notify (b, header); }
+    void addChunk (std::byte b, const Message::DynamicSizePropertyExchange& chunk) { array.addChunk (b, chunk); }
+    void notify (std::byte b, Span<const std::byte> header) { array.notify (b, header); }
     int countOngoingTransactions() const { return array.countOngoingTransactions(); }
 
 private:
@@ -343,13 +279,13 @@ ResponderPropertyExchangeCache::~ResponderPropertyExchangeCache() = default;
 
 void ResponderPropertyExchangeCache::primeCache (uint8_t maxSimultaneousTransactions,
                                                  std::function<void (const PropertyExchangeResult&)> onDone,
-                                                 RequestID id)
+                                                 std::byte id)
 {
     return pimpl->primeCache (maxSimultaneousTransactions, std::move (onDone), id);
 }
 
-void ResponderPropertyExchangeCache::addChunk (RequestID b, const Message::DynamicSizePropertyExchange& chunk) { pimpl->addChunk (b, chunk); }
-void ResponderPropertyExchangeCache::notify (RequestID b, Span<const std::byte> header) { pimpl->notify (b, header); }
+void ResponderPropertyExchangeCache::addChunk (std::byte b, const Message::DynamicSizePropertyExchange& chunk) { pimpl->addChunk (b, chunk); }
+void ResponderPropertyExchangeCache::notify (std::byte b, Span<const std::byte> header) { pimpl->notify (b, header); }
 int ResponderPropertyExchangeCache::countOngoingTransactions() const { return pimpl->countOngoingTransactions(); }
 
 } // namespace juce::midi_ci

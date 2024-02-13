@@ -33,12 +33,12 @@ class PaintRoutinePanel  : public EditingPanelBase
 {
 public:
     PaintRoutinePanel (JucerDocument&, PaintRoutine&, JucerDocumentEditor*);
-    ~PaintRoutinePanel() override;
+    ~PaintRoutinePanel();
 
     PaintRoutine& getPaintRoutine() const noexcept           { return routine; }
 
-    void updatePropertiesList() override;
-    Rectangle<int> getComponentArea() const override;
+    void updatePropertiesList();
+    Rectangle<int> getComponentArea() const;
 
 private:
     PaintRoutine& routine;

@@ -204,7 +204,7 @@ private:
                 oldName = comp->getButtonText();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setButtonText (newName);
@@ -212,7 +212,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setButtonText (oldName);
@@ -232,13 +232,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new ButtonCallbackChangeAction (component, *document.getComponentLayout(), newState),
                               "Change button callback");
         }
 
-        bool getState() const override       { return needsButtonListener (component); }
+        bool getState() const       { return needsButtonListener (component); }
 
     private:
         class ButtonCallbackChangeAction  : public ComponentUndoableAction <Button>
@@ -251,7 +251,7 @@ private:
                 oldState = needsButtonListener (comp);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setNeedsButtonListener (getComponent(), newState);
@@ -259,7 +259,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setNeedsButtonListener (getComponent(), oldState);
@@ -301,7 +301,7 @@ private:
                 oldId = comp->getRadioGroupId();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setRadioGroupId (newId);
@@ -309,7 +309,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setRadioGroupId (oldId);
@@ -331,13 +331,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new ButtonConnectedChangeAction (component, *document.getComponentLayout(), flag, newState),
                               "Change button connected edges");
         }
 
-        bool getState() const override
+        bool getState() const
         {
             return (component->getConnectedEdgeFlags() & flag) != 0;
         }
@@ -356,7 +356,7 @@ private:
                 oldState = ((comp->getConnectedEdgeFlags() & flag) != 0);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
 
@@ -369,7 +369,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
 

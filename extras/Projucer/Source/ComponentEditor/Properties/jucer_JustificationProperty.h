@@ -58,7 +58,7 @@ public:
     virtual Justification getJustification() const = 0;
 
     //==============================================================================
-    void setIndex (int newIndex) override
+    void setIndex (int newIndex)
     {
         const int types[] = { Justification::centred,
                               Justification::centredLeft,
@@ -77,7 +77,7 @@ public:
         }
     }
 
-    int getIndex() const override
+    int getIndex() const
     {
         const int types[] = { Justification::centred,
                               Justification::centredLeft,

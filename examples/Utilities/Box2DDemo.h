@@ -79,8 +79,8 @@ struct Settings
 
 struct Test
 {
-    Test()          = default;
-    virtual ~Test() = default;
+    Test()          {}
+    virtual ~Test() {}
 
     virtual void Keyboard (unsigned char /*key*/)   {}
     virtual void KeyboardUp (unsigned char /*key*/) {}
@@ -88,7 +88,7 @@ struct Test
     std::unique_ptr<b2World> m_world  { new b2World (b2Vec2 (0.0f, -10.0f)) };
 };
 
-JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wimplicit-int-float-conversion", "-Wsuggest-override")
+JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wimplicit-int-float-conversion")
 
 #include "../Assets/Box2DTests/AddPair.h"
 #include "../Assets/Box2DTests/ApplyForce.h"

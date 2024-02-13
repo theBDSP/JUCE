@@ -150,7 +150,7 @@ private:
                 oldName = comp->getText();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setText (newName);
@@ -158,7 +158,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setText (oldName);
@@ -215,7 +215,7 @@ private:
             {
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setTextLabelPosition (newState);
@@ -223,7 +223,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setTextLabelPosition (oldState);

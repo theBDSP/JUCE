@@ -44,8 +44,7 @@ JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wcast-align",
                                      "-Wswitch-default",
                                      "-Wswitch-enum",
                                      "-Wunused-but-set-variable",
-                                     "-Wzero-as-null-pointer-constant",
-                                     "-Wsuggest-override")
+                                     "-Wzero-as-null-pointer-constant")
 
 #include <cstdarg>
 

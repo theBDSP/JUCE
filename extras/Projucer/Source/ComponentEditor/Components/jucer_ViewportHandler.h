@@ -266,7 +266,7 @@ private:
         {
         }
 
-        void parentHierarchyChanged() override
+        void parentHierarchyChanged()
         {
             Viewport::parentHierarchyChanged();
             updateViewportContentComp (this);
@@ -301,13 +301,13 @@ private:
         {
         }
 
-        void setState (bool newState) override
+        void setState (bool newState)
         {
             document.perform (new ViewportScrollbarChangeAction (component, *document.getComponentLayout(), vertical, newState),
                               "Change Viewport scrollbar");
         }
 
-        bool getState() const override
+        bool getState() const
         {
             return vertical ? component->isVerticalScrollBarShown()
                             : component->isHorizontalScrollBarShown();
@@ -328,7 +328,7 @@ private:
                                     : comp->isHorizontalScrollBarShown();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 if (vertical)
@@ -340,7 +340,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 if (vertical)
@@ -407,7 +407,7 @@ private:
                 oldState = comp->getScrollBarThickness();
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 getComponent()->setScrollBarThickness (newState);
@@ -415,7 +415,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 getComponent()->setScrollBarThickness (newState);
@@ -439,13 +439,13 @@ private:
             choices.add ("Named content component");
         }
 
-        void setIndex (int newIndex) override
+        void setIndex (int newIndex)
         {
             document.perform (new ViewportContentTypeChangeAction (component, *document.getComponentLayout(), newIndex),
                               "Change Viewport content type");
         }
 
-        int getIndex() const override
+        int getIndex() const
         {
             return getViewportContentType (component);
         }
@@ -461,7 +461,7 @@ private:
                 oldValue = getViewportContentType (comp);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setViewportContentType (getComponent(), newValue);
@@ -470,7 +470,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setViewportContentType (getComponent(), oldValue);
@@ -538,7 +538,7 @@ private:
                 oldState = getViewportJucerComponentFile (comp);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setViewportJucerComponentFile (getComponent(), newState);
@@ -546,7 +546,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setViewportJucerComponentFile (getComponent(), oldState);
@@ -589,7 +589,7 @@ private:
                 oldValue = getViewportGenericComponentClass (comp);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setViewportGenericComponentClass (getComponent(), newValue);
@@ -598,7 +598,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setViewportGenericComponentClass (getComponent(), oldValue);
@@ -642,7 +642,7 @@ private:
                 oldValue = getViewportConstructorParams (comp);
             }
 
-            bool perform() override
+            bool perform()
             {
                 showCorrectTab();
                 setViewportConstructorParams (getComponent(), newValue);
@@ -651,7 +651,7 @@ private:
                 return true;
             }
 
-            bool undo() override
+            bool undo()
             {
                 showCorrectTab();
                 setViewportConstructorParams (getComponent(), oldValue);

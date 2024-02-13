@@ -530,7 +530,7 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
         GrabberCallback (Pimpl& p)
             : ComBaseClassHelperBase (0), owner (p) {}
 
-        JUCE_COMRESULT QueryInterface (REFIID refId, void** result) override
+        JUCE_COMRESULT QueryInterface (REFIID refId, void** result)
         {
             JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wlanguage-extension-token")
             if (refId == __uuidof (ComTypes::ISampleGrabberCB))
@@ -540,9 +540,9 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
             return ComBaseClassHelperBase<ComTypes::ISampleGrabberCB>::QueryInterface (refId, result);
         }
 
-        JUCE_COMRESULT SampleCB (double, ComTypes::IMediaSample*)  override { return E_FAIL; }
+        JUCE_COMRESULT SampleCB (double, ComTypes::IMediaSample*)  { return E_FAIL; }
 
-        JUCE_COMRESULT BufferCB (double time, BYTE* buffer, long bufferSize) override
+        JUCE_COMRESULT BufferCB (double time, BYTE* buffer, long bufferSize)
         {
             owner.handleFrame (time, buffer, bufferSize);
             return S_OK;
