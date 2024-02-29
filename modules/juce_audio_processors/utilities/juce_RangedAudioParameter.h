@@ -111,10 +111,10 @@ public:
     int getNumSteps() const override;
 
     /** Normalises and snaps a value based on the normalisable range. */
-    float convertTo0to1 (float v) const noexcept;
+    virtual float convertTo0to1 (float v) const noexcept;
 
     /** Denormalises and snaps a value based on the normalisable range. */
-    float convertFrom0to1 (float v) const noexcept;
+    virtual float convertFrom0to1 (float v) const noexcept;
 };
 
 } // namespace juce
