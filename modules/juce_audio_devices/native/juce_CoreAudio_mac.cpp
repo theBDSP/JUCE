@@ -2065,8 +2065,7 @@ private:
             if (target != nullptr)
                 target->audioDeviceStopped();
 
-            // The audio device may stop because it's about to be restarted with new settings.
-            // Stopping the device doesn't necessarily count as an error.
+            error = true;
         }
 
         void audioDeviceError (const String& errorMessage) override

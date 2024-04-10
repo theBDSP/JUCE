@@ -593,9 +593,6 @@ void CoreGraphicsContext::drawLine (const Line<float>& line)
 
 void CoreGraphicsContext::fillRectList (const RectangleList<float>& list)
 {
-    if (list.isEmpty())
-        return;
-
     std::vector<CGRect> rects;
     rects.reserve ((size_t) list.getNumRectangles());
 
