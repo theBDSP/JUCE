@@ -239,7 +239,15 @@ public:
 
     /** Returns a rectangle with the same size as this one, but a new centre position. */
     [[nodiscard]] Rectangle withCentre (Point<ValueType> newCentre) const noexcept                 { return { newCentre.x - w / (ValueType) 2,
-                                                                                                               newCentre.y - h / (ValueType) 2, w, h }; }
+                                                                                                               newCentre.y - h / (ValueType) 2, w, h }; } 
+    
+    /** Returns a rectangle with the same size as this one, but a new centre position. */
+    [[nodiscard]] Rectangle withCentreX (ValueType newCentreX) const noexcept                 { return { newCentreX - w / (ValueType) 2,
+                                                                                                               pos.y, w, h }; }
+
+    /** Returns a rectangle with the same size as this one, but a new centre position. */
+    [[nodiscard]] Rectangle withCentreY (ValueType newCentreY) const noexcept                 { return { pos.x,
+                                                                                                               newCentreY - h / (ValueType) 2, w, h }; } 
 
     /** Returns a rectangle which has the same position and height as this one, but with a different width. */
     [[nodiscard]] Rectangle withWidth (ValueType newWidth) const noexcept                          { return { pos.x, pos.y, jmax (ValueType(), newWidth), h }; }
